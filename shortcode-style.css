@@ -1,0 +1,20 @@
+#static-filed {
+    width: 100%;
+    margin: 0;
+    float: left;
+    padding: 0;
+    list-style: none;
+}
+#static-filed li {
+    width: 50%;
+    margin: 0;
+        margin-top: 0px;
+        margin-bottom: 0px;
+    float: left;
+    border-bottom: 1px #e8e4e4 solid;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+    font-size: 15px;
+    color: #7a7a7a;
+    margin-top: 5px;
+}
