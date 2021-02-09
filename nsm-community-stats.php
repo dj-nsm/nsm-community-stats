@@ -54,12 +54,14 @@ function nsm_community_register_settings() {
 
     add_settings_field( 'nsm_community_plugin_setting_api_key', 'API Key', 'nsm_community_plugin_setting_api_key', 'nsm_community', 'api_settings' );
     add_settings_field( 'nsm_community_plugin_setting_dev_key', 'Developer Key', 'nsm_community_plugin_setting_dev_key', 'nsm_community', 'api_settings' );
+	add_settings_field( 'nsm_community_plugin_setting_details_url', 'Developer Key', 'nsm_community_plugin_setting_details_url', 'nsm_community', 'api_settings' );
 }
 add_action( 'admin_init', 'nsm_community_register_settings' );
 
 function nsm_community_options_validate( $input ) {
     $newinput['api_key'] = trim( $input['api_key'] );
 	$newinput['dev_key'] = trim( $input['dev_key'] );
+	$newinput['details_url'] = trim( $input['details_url'] );
     return $newinput;
 }
 
@@ -77,6 +79,11 @@ function nsm_community_plugin_setting_dev_key() {
     echo "<input id='nsm_community_plugin_setting_dev_key' name='nsm_community_options[dev_key]' type='text' value='" . esc_attr( $options['dev_key'] )  . "' />";
 }
 
+function nsm_community_plugin_setting_details_url() {
+    $options = get_option( 'nsm_community_options' );
+    echo "<input id='nsm_community_plugin_setting_dev_key' name='nsm_community_options[details_url]' type='text' value='" . esc_attr( $options['details_url'] )  . "' />";
+}
+
 function comstat_shortcode( $atts = array() ) {
 	// set up default parameters
 	extract( shortcode_atts( array(
@@ -87,7 +94,6 @@ function comstat_shortcode( $atts = array() ) {
 	$dev_key = esc_attr( $options['dev_key'] );
 	$SL_ID = $atts['slid'];
 	$request = 'https://api.idxbroker.com/clients/savedlinks/' . $SL_ID . '/results';
-	//$request = 'https://api.idxbroker.com/clients/savedlinks';
 	$results = IDX_API($access_key, $dev_key, $request, "GET");
 	$numProps = count($results);
 	$prices = array();
@@ -124,6 +130,53 @@ function comstat_shortcode( $atts = array() ) {
 	echo $html;
 }
 add_shortcode('comstat', 'comstat_shortcode');
+
+function hotsheet_shortcode( $atts = array() ) {
+	// set up default parameters
+	extract( shortcode_atts( array(
+		'slid' => '8215'
+	), $atts));
+	$options = get_option( 'nsm_community_options' );
+	$access_key = esc_attr( $options['api_key'] );
+	$dev_key = esc_attr( $options['dev_key'] );
+	$SL_ID = $atts['slid'];
+	$request = 'https://api.idxbroker.com/clients/savedlinks/' . $SL_ID . '/results';
+	$results = IDX_API($access_key, $dev_key, $request, "GET");
+	$html = '<div class="nsm-community-stats-container">';
+	$html .= '<table>';
+	$html .= '<tr>';
+	$html .= '<th>Status</th><th>View Link</th><th>Price</th><th>Address</th><th>Full Bathrooms</th><th>Partial Bathrooms</th><th>SqFt</th>';
+	$html .= '</tr>';
+	foreach( $results as $result ) {
+		$status = $result['propStatus'];
+		$listingID = $results['listingID'];
+		$address = $result['address'];
+		$city = $result['cityName'];
+		$state = $result['state'];
+		$zip = $result['zipcode'];
+		$bedrooms = $result['bedrooms'];
+		$fullbaths = $result['fullBaths'];
+		$partialbaths = $result['partialBaths'];
+		$price = $result['listingPrice'];
+		$detailURL = $result['detailsURL'];
+		$sqft = $result['sqFt'];
+		$link = esc_attr( $options['details_url'] );
+		$link .= $detailURL;
+		$html .= '<tr>';
+		$html .= '<td>' . $status . '</td>';
+		$html .= '<td><a href="' . $link . '">View</a></td>';
+		$html .= '<td>' . $price . '</td>';
+		$html .= '<td>' . $address . '</td>';
+		$html .= '<td>' . $fullbaths . '</td>';
+		$html .= '<td>' . $partialbaths . '</td>';
+		$html .= '<td>' . $sqft . '</td>';
+		$html .= '</tr>';
+	}
+	$html .= '</table>';
+	$html .= '</div>';
+	echo $html;
+}
+add_shortcode('hotsheet', 'hotsheet_shortcode');
 
 function IDX_API( $access_key = null, $dev_key = null, $request = null, $method = null ) {
 	$args = array(
