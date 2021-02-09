@@ -145,7 +145,7 @@ function hotsheet_shortcode( $atts = array() ) {
 	$html = '<div class="nsm-community-stats-container">';
 	$html .= '<table>';
 	$html .= '<tr>';
-	$html .= '<th>Status</th><th>View Link</th><th>Price</th><th>Address</th><th>Full Bathrooms</th><th>Partial Bathrooms</th><th>SqFt</th>';
+	$html .= '<th>Status</th><th>View Link</th><th>Price</th><th>Address</th><th>Bedrooms</th><th>Full Bathrooms</th><th>Partial Bathrooms</th><th>SqFt</th>';
 	$html .= '</tr>';
 	foreach( $results as $result ) {
 		$status = $result['propStatus'];
@@ -167,6 +167,7 @@ function hotsheet_shortcode( $atts = array() ) {
 		$html .= '<td><a href="' . $link . '">View</a></td>';
 		$html .= '<td>' . $price . '</td>';
 		$html .= '<td>' . $address . '</td>';
+		$html .= '<td>' . $bedrooms . '</td>';
 		$html .= '<td>' . $fullbaths . '</td>';
 		$html .= '<td>' . $partialbaths . '</td>';
 		$html .= '<td>' . $sqft . '</td>';
